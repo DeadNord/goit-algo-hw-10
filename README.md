@@ -1,16 +1,14 @@
 Product Amount
 
----
-
 Lemonade 30
 
 Fruit Juice 20
 
 Total Production 50
 
-Method Result
-
 ---
+
+Method Result
 
 Monte Carlo 2.68365
 
