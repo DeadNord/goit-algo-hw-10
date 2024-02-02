@@ -1,50 +1,84 @@
-from pulp import *
+from pulp import LpProblem, LpMaximize, LpVariable, value
 import numpy as np
 import scipy.integrate as spi
-
-# Ініціалізація моделі
-model = LpProblem("Maximize_Production", LpMaximize)
-
-# Визначення змінних
-lemonade = LpVariable("Lemonade", lowBound=0, cat="Integer")
-fruit_juice = LpVariable("Fruit_Juice", lowBound=0, cat="Integer")
-
-# Додавання функції цілі
-model += lemonade + fruit_juice, "Total_Production"
-
-# Обмеження ресурсів
-model += 2 * lemonade + fruit_juice <= 100, "Water"
-model += lemonade <= 50, "Sugar"
-model += lemonade <= 30, "Lemon_Juice"
-model += 2 * fruit_juice <= 40, "Fruit_Puree"
-
-# Розв'язання задачі
-model.solve()
-
-# Виведення результатів
-print(f"Lemonade: {lemonade.varValue}")
-print(f"Fruit Juice: {fruit_juice.varValue}")
-print(f"Total Production: {value(model.objective)}")
+import matplotlib.pyplot as plt
+from tabulate import tabulate
 
 
-# Визначення функції
-def f(x):
-    return x**2
+class ProductionOptimization:
+    def __init__(self):
+        self.model = LpProblem("Maximize_Production", LpMaximize)
+        self.lemonade = LpVariable("Lemonade", lowBound=0, cat="Integer")
+        self.fruit_juice = LpVariable("Fruit_Juice", lowBound=0, cat="Integer")
+
+    def setup_problem(self):
+        # Додавання функції цілі
+        self.model += self.lemonade + self.fruit_juice, "Total_Production"
+        # Обмеження ресурсів
+        self.model += 2 * self.lemonade + self.fruit_juice <= 100, "Water"
+        self.model += self.lemonade <= 50, "Sugar"
+        self.model += self.lemonade <= 30, "Lemon_Juice"
+        self.model += 2 * self.fruit_juice <= 40, "Fruit_Puree"
+
+    def solve(self):
+        self.model.solve()
+        results = [
+            ["Lemonade", self.lemonade.varValue],
+            ["Fruit Juice", self.fruit_juice.varValue],
+            ["Total Production", value(self.model.objective)],
+        ]
+        print(tabulate(results, headers=["Product", "Amount"]))
 
 
-# Метод Монте-Карло
-def monte_carlo_integration(func, a, b, samples=10000):
-    random_samples = np.random.uniform(a, b, samples)
-    func_values = func(random_samples)
-    area = (b - a) * np.mean(func_values)
-    return area
+class MonteCarloIntegration:
+    def __init__(self, func, a, b, samples=10000):
+        self.func = func
+        self.a = a
+        self.b = b
+        self.samples = samples
+
+    def integrate(self):
+        random_samples = np.random.uniform(self.a, self.b, self.samples)
+        func_values = self.func(random_samples)
+        area = (self.b - self.a) * np.mean(func_values)
+        return area
+
+    def compare_with_quad(self):
+        mc_result = self.integrate()
+        quad_result, _ = spi.quad(self.func, self.a, self.b)
+        results = [
+            ["Method", "Result"],
+            ["Monte Carlo", mc_result],
+            ["Quad", quad_result],
+        ]
+        print(tabulate(results, headers="firstrow"))
+        self.visualize()
+
+    def visualize(self):
+        x = np.linspace(self.a - 1, self.b + 1, 400)
+        y = self.func(x)
+        plt.plot(x, y, "r", linewidth=2)
+        plt.fill_between(x, y, color="gray", alpha=0.3)
+        plt.title(f"Integration of f(x) from {self.a} to {self.b}")
+        plt.xlabel("x")
+        plt.ylabel("f(x)")
+        plt.grid(True)
+        plt.show()
 
 
-# Обчислення інтеграла методом Монте-Карло
-mc_result = monte_carlo_integration(f, 0, 2)
+def main():
+    # Виконання оптимізації виробництва
+    prod_opt = ProductionOptimization()
+    prod_opt.setup_problem()
+    prod_opt.solve()
 
-# Обчислення інтеграла за допомогою quad
-quad_result, error = spi.quad(f, 0, 2)
+    # Виконання та візуалізація Монте-Карло інтеграції
+    def f(x):
+        return x**2
 
-print(f"Монте-Карло: {mc_result}")
-print(f"Quad: {quad_result}")
+    mc_integration = MonteCarloIntegration(f, 0, 2)
+    mc_integration.compare_with_quad()
+
+
+if __name__ == "__main__":
+    main()
