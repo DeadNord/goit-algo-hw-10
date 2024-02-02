@@ -27,7 +27,7 @@ class ProductionOptimization:
             ["Fruit Juice", self.fruit_juice.varValue],
             ["Total Production", value(self.model.objective)],
         ]
-        print(tabulate(results, headers=["Product", "Amount"]))
+        print(tabulate(results, headers=["Product", "Amount"], tablefmt="pipe"))
 
 
 class MonteCarloIntegration:
@@ -51,7 +51,7 @@ class MonteCarloIntegration:
             ["Monte Carlo", mc_result],
             ["Quad", quad_result],
         ]
-        print(tabulate(results, headers="firstrow"))
+        print(tabulate(results, headers="firstrow", tablefmt="pipe"))
         self.visualize()
 
     def visualize(self):

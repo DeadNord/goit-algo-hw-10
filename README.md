@@ -1,18 +1,12 @@
-Product Amount
-
-Lemonade 30
-
-Fruit Juice 20
-
-Total Production 50
-
----
-
-Method Result
-
-Monte Carlo 2.68365
-
-Quad 2.66667
+| Product          |     Amount |
+| :--------------- | ---------: |
+| Lemonade         |         30 |
+| Fruit Juice      |         20 |
+| Total Production |         50 |
+| Method           |     Result |
+| :------------    | ---------: |
+| Monte Carlo      |      2.652 |
+| Quad             |    2.66667 |
 
 ![Alt text](image.png)
 
