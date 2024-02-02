@@ -13,6 +13,7 @@ Method Result
 Monte Carlo 2.68365
 
 Quad 2.66667
+
 ![Alt text](image.png)
 
 ## Завдання 1: Оптимізація виробництва
